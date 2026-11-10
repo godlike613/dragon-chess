@@ -220,7 +220,7 @@ header{margin-bottom:20px}
 }
 
 
-/* v6.0: squad roster, full character panels, and centered board */
+/* v6.1: squad roster, full character panels, and centered board */
 #playerCard{grid-row:1;min-height:0;height:auto;display:grid;grid-template-columns:84px minmax(0,1fr);grid-template-rows:auto;align-items:center;gap:10px;padding:10px}
 #playerCard .portrait{width:84px;height:112px;grid-column:1;grid-row:1;border-radius:7px}
 #playerCard .finfo{grid-column:2;grid-row:1;padding:8px}
@@ -426,6 +426,22 @@ body:before{opacity:.13;background-image:radial-gradient(#d8d0bd 0.65px,transpar
 .player-health .hpbar{height:10px;border-color:#77916f}
 @media(max-width:950px){.game{grid-template-columns:minmax(0,1.35fr) minmax(280px,.95fr);gap:8px}.board-frame{width:100%;height:100%;max-height:none}}
 @media(max-width:650px){.game{grid-template-columns:1fr;grid-template-rows:auto minmax(330px,48vh) auto}.board-frame{grid-column:1;grid-row:1;width:100%;height:auto;aspect-ratio:1}.board{width:100%;height:100%}#enemyCard,#enemyCard.boss-mode{grid-column:1;grid-row:2;min-height:330px;height:48vh}.controls{grid-column:1;grid-row:3}}
+
+/* Boss layer depth, idle breathing and rising embers */
+#enemyCard .boss-scene{z-index:2;overflow:hidden}
+#enemyCard .boss-scene svg{animation:dragonIdle 5.4s ease-in-out infinite;transform-origin:50% 42%}
+@keyframes dragonIdle{0%,100%{transform:translateY(0) scale(1);filter:brightness(1)}50%{transform:translateY(-5px) scale(1.012);filter:brightness(1.1)}}
+#enemyCard.boss-winding .boss-scene svg{animation:dragonGather  .65s ease-in-out}
+@keyframes dragonGather{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(-11px) scale(1.035);filter:brightness(1.55) saturate(1.4)}}
+#enemyCard.boss-attacking .boss-scene svg{animation:dragonBodyLunge .72s cubic-bezier(.16,.78,.25,1)}
+.boss-ember-layer{position:absolute;z-index:3;inset:0;overflow:hidden;pointer-events:none;mask-image:linear-gradient(180deg,transparent 0%,#000 18%,#000 100%)}
+.boss-ember{position:absolute;bottom:0;width:var(--ember-size);height:var(--ember-size);border-radius:50%;background:radial-gradient(circle,#fff5bb 0%,#ffb144 36%,#f34a1c 74%,transparent 100%);box-shadow:0 0 7px #ff9c35,0 0 16px #ff5924;opacity:0;animation:emberLift linear infinite}
+@keyframes emberLift{0%{transform:translate3d(0,0,0) scale(.35);opacity:0}12%{opacity:.9}78%{opacity:.7}100%{transform:translate3d(var(--drift),-480px,0) scale(.06);opacity:0}}
+#enemyCard .boss-clock,#enemyCard .finfo{z-index:4}
+#enemyCard .hit-layer{z-index:6}
+#enemyCard.boss-attacking .boss-ember{animation-duration:1.8s!important;box-shadow:0 0 10px #ffdb7a,0 0 24px #ff5924}
+.tile .gem{filter:drop-shadow(0 6px 5px #000c) drop-shadow(0 0 7px color-mix(in srgb,var(--gem-color,#90dfff),transparent 58%))}
+@media(prefers-reduced-motion:reduce){.boss-ember,.boss-scene svg{animation:none!important}}
 </style>
 </head>
 <body>
@@ -600,7 +616,7 @@ function render(){
   if(!g.uid)g.uid=++gemUid;
   let b=document.createElement('button');
   b.className='tile'+(sel===i?' sel':'')+(g.special?' ability':'')+(g.special===2?' ultimate':'');
-  b.dataset.i=i;b.dataset.uid=String(g.uid);b.draggable=true;b.disabled=busy||over||attackInProgress;
+  b.dataset.i=i;b.dataset.uid=String(g.uid);b.style.setProperty('--gem-color',heroes[g.type].color);b.draggable=true;b.disabled=busy||over||attackInProgress;
   b.setAttribute('aria-label',`${heroes[g.type]?.name||'Кристалл'}${g.special?' ability':''}`);
   b.innerHTML=gemSvg(g.type,g.special);
   b.addEventListener('click',()=>pick(i));
@@ -715,9 +731,24 @@ async function resolve(){busy=true;let chain=0;while(true){let {set,groups}=runs
  busy=!!$('modal').classList.contains('show');render()}
 async function winEnemy(){score+=1000+enemy*1000;toast('ПРОТИВНИК ПОВЕРЖЕН');if(enemy===2){finish(true);return}enemy++;ehp=enemies[enemy].hp;hp=Math.min(MAXHP,hp+25);enemyTick=0;render();$('modalTitle').textContent='ПРОТИВНИК ПОВЕРЖЕН';$('modalText').textContent=`Следующий враг: ${enemies[enemy].name}. Герой восстановил 25 здоровья.`;$('modalBtn').textContent='В бой';$('modal').classList.add('show');busy=true}
 function finish(win){over=true;busy=false;$('modalTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';$('modalText').textContent=win?`Все враги побеждены. Финальный счёт: ${score.toLocaleString('ru-RU')}.`:`Герой пал. Счёт: ${score.toLocaleString('ru-RU')}.`; $('modalBtn').textContent='Новая игра';$('modal').classList.add('show')}
+function initBossEmbers(){
+ const host=$('enemyCard');if(!host||host.querySelector('.boss-ember-layer'))return;
+ const layer=document.createElement('div');layer.className='boss-ember-layer';
+ for(let i=0;i<24;i++){
+  const e=document.createElement('i');e.className='boss-ember';
+  e.style.left=(4+Math.random()*92)+'%';
+  e.style.bottom=(Math.random()*35)+'%';
+  e.style.animationDelay=(-Math.random()*6)+'s';
+  e.style.animationDuration=(3.2+Math.random()*4.8)+'s';
+  e.style.setProperty('--drift',(Math.random()*70-35)+'px');
+  e.style.setProperty('--ember-size',(2+Math.random()*4)+'px');
+  layer.appendChild(e);
+ }
+ host.appendChild(layer);
+}
 function updateTimer(){const t=$('timer');if(t){t.textContent=clock+'s';t.classList.toggle('warn',clock<=7)}const label=$('bossTimerText'),bar=$('bossTimerBar');if(label)label.textContent=clock+'с';if(bar)bar.style.width=Math.max(0,Math.min(100,clock/TURN_SECONDS*100))+'%'}
 function tickTimer(){if(over||attackInProgress||$('modal').classList.contains('show'))return;clock=Math.max(0,clock-1);updateTimer();if(clock<=0)launchBossAttack()}
-function newGame(){score=0;turn=0;hp=MAXHP;enemy=new URLSearchParams(location.search).has('boss-preview')?2:0;ehp=enemies[enemy].hp;busy=false;over=false;sel=null;enemyTick=0;attackInProgress=false;clock=TURN_SECONDS;$('modal').classList.remove('show');makeBoard();render();updateTimer();say('Перетащи кристалл на соседний или выбери два соседних.')}
+function newGame(){score=0;turn=0;hp=MAXHP;enemy=new URLSearchParams(location.search).has('boss-preview')?2:0;ehp=enemies[enemy].hp;busy=false;over=false;sel=null;enemyTick=0;attackInProgress=false;clock=TURN_SECONDS;$('modal').classList.remove('show');makeBoard();render();initBossEmbers();updateTimer();say('Перетащи кристалл на соседний или выбери два соседних.')}
 
 
 $('modalBtn').addEventListener('click',()=>{if(over)newGame();else{$('modal').classList.remove('show');busy=false;clock=TURN_SECONDS;updateTimer();say('Продолжай комбинации!');render()}})
