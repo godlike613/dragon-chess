@@ -409,7 +409,7 @@ function finish(win){over=true;busy=false;$('modalTitle').textContent=win?'ПО�
 function updateTimer(){const t=$('timer');t.textContent=clock+'s';t.classList.toggle('warn',clock<=7)}
 function tickTimer(){if(over||busy)return;clock--;updateTimer();if(clock<=0){clock=TURN_SECONDS;updateTimer();enemyTick++;let hit=10+enemy*4;hp=Math.max(0,hp-hit);takeDamage('playerCard',hit,hit>=12);toast('ВРЕМЯ · −'+hit+' HP');render();if(hp<=0)finish(false);else say('Время вышло: враг наносит '+hit+' урона.')}
 }
-function newGame(){score=0;turn=0;hp=MAXHP;enemy=0;ehp=enemies[0].hp;busy=false;over=false;sel=null;enemyTick=0;clock=TURN_SECONDS;$('modal').classList.remove('show');makeBoard();render();updateTimer();say('Перетащи кристалл на соседний или выбери два соседних.')}
+function newGame(){score=0;turn=0;hp=MAXHP;enemy=new URLSearchParams(location.search).has('boss-preview')?2:0;ehp=enemies[enemy].hp;busy=false;over=false;sel=null;enemyTick=0;clock=TURN_SECONDS;$('modal').classList.remove('show');makeBoard();render();updateTimer();say('Перетащи кристалл на соседний или выбери два соседних.')}
 
 
 $('modalBtn').addEventListener('click',()=>{if(over)newGame();else{$('modal').classList.remove('show');busy=false;clock=TURN_SECONDS;updateTimer();say('Продолжай комбинации!');render()}})
