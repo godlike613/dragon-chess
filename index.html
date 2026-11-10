@@ -220,7 +220,7 @@ header{margin-bottom:20px}
 }
 
 
-/* v5.0: squad roster, full character panels, and centered board */
+/* v5.1: squad roster, full character panels, and centered board */
 #playerCard{grid-row:1;min-height:0;height:auto;display:grid;grid-template-columns:84px minmax(0,1fr);grid-template-rows:auto;align-items:center;gap:10px;padding:10px}
 #playerCard .portrait{width:84px;height:112px;grid-column:1;grid-row:1;border-radius:7px}
 #playerCard .finfo{grid-column:2;grid-row:1;padding:8px}
@@ -302,7 +302,7 @@ header{display:none!important}
 @keyframes crystalBurst{0%{transform:scale(1) rotate(0);opacity:1;filter:brightness(1)}18%{transform:scale(1.18) rotate(4deg);filter:brightness(2.4) saturate(1.7)}42%{transform:scale(.88) rotate(-7deg);opacity:1;filter:brightness(2.2)}72%{transform:scale(.38) rotate(18deg);opacity:.56;filter:blur(1px) brightness(2)}100%{transform:scale(.02) rotate(42deg);opacity:0;filter:blur(4px)}}
 @keyframes crystalFlash{0%{opacity:0;transform:scale(.25)}30%{opacity:1;transform:scale(1.1)}100%{opacity:0;transform:scale(1.8)}}
 @keyframes crystalSpark{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-25deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.35) rotate(20deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.3) rotate(70deg)}}
-#enemyCard,#enemyCard.boss-mode{grid-column:2;grid-row:1 / span 2;align-self:stretch;justify-self:stretch;position:relative;isolation:isolate;overflow:hidden;min-height:0;height:100%;padding:16px;border-radius:15px;border:1px solid #ca9553;background-color:#111a28;background-image:linear-gradient(180deg,#07111d0b 0%,#09132112 44%,#080e1df0 100%),inherit;background-size:cover;background-position:center 32%;box-shadow:0 0 0 1px #ffe0a34c inset,0 0 30px #ee8c3524,0 18px 44px #000b}
+#enemyCard,#enemyCard.boss-mode{grid-column:2;grid-row:1 / span 2;align-self:stretch;justify-self:stretch;position:relative;isolation:isolate;overflow:hidden;min-height:0;height:100%;padding:16px;border-radius:15px;border:1px solid #ca9553;background-color:#111a28;background-size:cover;background-position:center 32%;box-shadow:0 0 0 1px #ffe0a34c inset,0 0 30px #ee8c3524,0 18px 44px #000b}
 #enemyCard:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07101b20 0%,#08111b10 48%,#070e1cf5 100%),radial-gradient(ellipse at 70% 35%,#f36b2f22,transparent 58%);pointer-events:none}
 #enemyCard .portrait{display:none!important}
 #enemyCard .hit-layer{position:absolute;inset:0;overflow:hidden;z-index:5;border-radius:15px}
@@ -362,6 +362,15 @@ button.action:not(.secondary){background:linear-gradient(180deg,#ffe4a3,#ce8b2e)
  .boss-clock-label{font-size:9px}
 }
 
+
+.player-health{width:min(230px,28%);min-width:150px;padding:0 12px}
+.player-health-label{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;color:#c4d3e5;font:700 9px Cinzel;letter-spacing:1px}
+.player-health-label b{color:#c4f3b1;font:800 12px Cinzel}
+.player-health .hpbar{height:9px;border-color:#66806a}
+.player-health .hpfill{background:linear-gradient(90deg,#1d885c,#77d98d,#d2f6ae);box-shadow:0 0 10px #72d68a77}
+.boss-attack-lock .tile{pointer-events:none}
+@media(max-width:650px){.player-health{width:100%;min-width:0;order:0;padding:0 3px}.player-health-label{font-size:8px}.controls{flex-wrap:wrap}}
+
 </style>
 </head>
 <body>
@@ -370,7 +379,7 @@ button.action:not(.secondary){background:linear-gradient(180deg,#ffe4a3,#ce8b2e)
 <div class="game">
 <section class="main">
  <div class="arena" id="arena">
-  <div class="fighter" id="playerCard"><div class="portrait" id="playerPortrait"></div><div class="hit-layer" id="playerHitLayer"></div><div class="finfo"><div class="name">ВОИН АЙСВРЕКА</div><div class="role">CHAMPION</div><div class="hpbar"><div class="hpfill" id="playerFill"></div></div><div class="hpnum"><span>Здоровье</span><b id="playerHp">100 / 100</b></div></div><div class="battle-tag">ALLY</div></div>
+  <div class="fighter" id="playerCard"><div class="portrait" id="playerPortrait"></div><div class="hit-layer" id="playerHitLayer"></div><div class="finfo"><div class="name">ВОИН АЙСВРЕКА</div><div class="role">CHAMPION</div><div class="hpbar"><div class="hpfill"></div></div><div class="hpnum"><span>Здоровье</span><b>100 / 100</b></div></div><div class="battle-tag">ALLY</div></div>
   <div class="fighter enemy" id="enemyCard"><div class="portrait" id="enemyPortrait"></div><div class="hit-layer" id="enemyHitLayer"></div><div class="finfo"><div class="name" id="enemyName">ЛЕДЯНОЙ ГУЛЬ</div><div class="role" id="enemyRole">ENEMY · 1/3</div><div class="hpbar"><div class="hpfill" id="enemyFill"></div></div><div class="hpnum"><span>Здоровье</span><b id="enemyHp">45 / 45</b></div></div><div class="boss-clock"><div class="boss-clock-label"><span>АТАКА ДРАКОНА ЧЕРЕЗ</span><b id="bossTimerText">25с</b></div><div class="boss-clock-track"><i id="bossTimerBar"></i></div></div><div class="battle-tag">FOE</div></div>
  </div>
  <div class="hero-roster" id="heroRoster">
@@ -378,7 +387,7 @@ button.action:not(.secondary){background:linear-gradient(180deg,#ffe4a3,#ce8b2e)
  </div>
  <div class="stats"><div class="stat"><strong id="score">00000</strong><span>СЧЁТ</span></div><div class="stat"><strong id="turn">01</strong><span>ХОД</span></div><div class="stage" id="stage">ENCOUNTER 1 / 3</div><div class="stage timer" id="timer">25s</div></div>
  <div class="board-frame" id="boardFrame"><div class="board" id="board" aria-label="Игровое поле 8 на 8"></div></div>
- <div class="controls"><div><button class="action secondary" id="hint">Подсказка</button> <button class="action secondary" id="shuffle">Перемешать</button> <button class="action secondary" id="sound">Звук: выкл.</button></div><button class="action" id="restart">Новая игра</button></div>
+ <div class="controls"><div class="player-health" id="playerHealth"><div class="player-health-label"><span>ЗАПАС СИЛ ГЕРОЯ</span><b id="playerHp">100 / 100</b></div><div class="hpbar"><div class="hpfill" id="playerFill"></div></div></div><div><button class="action secondary" id="hint">Подсказка</button> <button class="action secondary" id="shuffle">Перемешать</button> <button class="action secondary" id="sound">Звук: выкл.</button></div><button class="action" id="restart">Новая игра</button></div>
  <div class="status" id="status" role="status" aria-live="polite">Перетащи кристалл на соседний или нажми два соседних кристалла.</div>
 </section>
 <aside class="side">
@@ -533,6 +542,7 @@ function takeDamage(cardId,amount,critical=false,healing=false){
  label.style.top=cardId==='enemyCard'?'34%':'28%';
  layer.appendChild(label);label.addEventListener('animationend',()=>label.remove(),{once:true});
 }
+function syncPlayerHealth(){const t=$('playerHp'),bar=$('playerFill');if(t)t.textContent=`${hp} / ${MAXHP}`;if(bar)bar.style.width=hp/MAXHP*100+'%'}
 function showBoardImpact(amount){
  const host=$('boardFrame');if(!host)return;
  host.classList.remove('board-under-attack');void host.offsetWidth;host.classList.add('board-under-attack');
@@ -547,7 +557,7 @@ function showBoardHeal(amount){
 }
 async function launchBossAttack(){
  if(attackInProgress||over)return;
- attackInProgress=true;
+ attackInProgress=true;$('boardFrame').classList.add('boss-attack-lock');
  const card=$('enemyCard'),boardRect=$('boardFrame').getBoundingClientRect(),bossRect=card.getBoundingClientRect();
  card.classList.remove('boss-winding','boss-attacking');void card.offsetWidth;card.classList.add('boss-winding');
  toast('ДРЕВНИЙ ДРАКОН ГОТОВИТ АТАКУ');
@@ -558,19 +568,19 @@ async function launchBossAttack(){
  const sx=bossRect.left+bossRect.width*.19,sy=bossRect.top+bossRect.height*.38;
  const tx=boardRect.left+boardRect.width*.82,ty=boardRect.top+boardRect.height*.47;
  const dx=tx-sx,dy=ty-sy,len=Math.hypot(dx,dy),angle=Math.atan2(dy,dx)*180/Math.PI;
- beam.style.left=sx+'px';beam.style.top=sy+'px';beam.style.width=len+'px';beam.style.transform='rotate('+angle+'deg) scaleX(.02)';
+ beam.style.left=sx+'px';beam.style.top=sy+'px';beam.style.width=len+'px';beam.style.setProperty('--angle',angle+'deg');beam.style.transform='rotate('+angle+'deg) scaleX(.02)';
  document.body.appendChild(beam);
  requestAnimationFrame(()=>beam.classList.add('fire-wave-active'));
  await wait(450);
  if(!over){
-  const hit=11+enemy*4;hp=Math.max(0,hp-hit);showBoardImpact(hit);toast('УДАР ДРАКОНА · −'+hit+' HP');
+  const hit=11+enemy*4;hp=Math.max(0,hp-hit);syncPlayerHealth();showBoardImpact(hit);toast('УДАР ДРАКОНА · −'+hit+' HP');
   beep(115,.22,'sawtooth');
   if(hp<=0)finish(false);
  }
  await wait(350);
- beam.remove();card.classList.remove('boss-attacking','boss-winding');
+ beam.remove();card.classList.remove('boss-attacking','boss-winding');$('boardFrame').classList.remove('boss-attack-lock');
  attackInProgress=false;
- if(!over){clock=TURN_SECONDS;updateTimer();render()}
+ if(!over){clock=TURN_SECONDS;updateTimer()}
 }
 function say(t){$('status').textContent=t}
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1500)}
@@ -594,8 +604,8 @@ async function resolve(){busy=true;let chain=0;while(true){let {set,groups}=runs
 async function winEnemy(){score+=1000+enemy*1000;toast('ПРОТИВНИК ПОВЕРЖЕН');if(enemy===2){finish(true);return}enemy++;ehp=enemies[enemy].hp;hp=Math.min(MAXHP,hp+25);enemyTick=0;render();$('modalTitle').textContent='ПРОТИВНИК ПОВЕРЖЕН';$('modalText').textContent=`Следующий враг: ${enemies[enemy].name}. Герой восстановил 25 здоровья.`;$('modalBtn').textContent='В бой';$('modal').classList.add('show');busy=true}
 function finish(win){over=true;busy=false;$('modalTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';$('modalText').textContent=win?`Все враги побеждены. Финальный счёт: ${score.toLocaleString('ru-RU')}.`:`Герой пал. Счёт: ${score.toLocaleString('ru-RU')}.`; $('modalBtn').textContent='Новая игра';$('modal').classList.add('show')}
 function updateTimer(){const t=$('timer');if(t){t.textContent=clock+'s';t.classList.toggle('warn',clock<=7)}const label=$('bossTimerText'),bar=$('bossTimerBar');if(label)label.textContent=clock+'с';if(bar)bar.style.width=Math.max(0,Math.min(100,clock/TURN_SECONDS*100))+'%'}
-function tickTimer(){if(over||attackInProgress)return;clock=Math.max(0,clock-1);updateTimer();if(clock<=0)launchBossAttack()}
-function newGame(){score=0;turn=0;hp=MAXHP;enemy=new URLSearchParams(location.search).has('boss-preview')?2:0;ehp=enemies[enemy].hp;busy=false;over=false;sel=null;enemyTick=0;clock=TURN_SECONDS;$('modal').classList.remove('show');makeBoard();render();updateTimer();say('Перетащи кристалл на соседний или выбери два соседних.')}
+function tickTimer(){if(over||attackInProgress||$('modal').classList.contains('show'))return;clock=Math.max(0,clock-1);updateTimer();if(clock<=0)launchBossAttack()}
+function newGame(){score=0;turn=0;hp=MAXHP;enemy=new URLSearchParams(location.search).has('boss-preview')?2:0;ehp=enemies[enemy].hp;busy=false;over=false;sel=null;enemyTick=0;attackInProgress=false;clock=TURN_SECONDS;$('modal').classList.remove('show');makeBoard();render();updateTimer();say('Перетащи кристалл на соседний или выбери два соседних.')}
 
 
 $('modalBtn').addEventListener('click',()=>{if(over)newGame();else{$('modal').classList.remove('show');busy=false;clock=TURN_SECONDS;updateTimer();say('Продолжай комбинации!');render()}})
