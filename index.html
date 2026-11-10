@@ -206,7 +206,7 @@ window.DragonChess={
   check('all gem types are known',board.every(x=>heroes[x.type]));
   check('board starts without matches',!hasMatch());
   check('board has at least one legal move',validMove());
-  check('horizontal adjacency',adjacent(0,1)&&adjacent(7,6)&&!adjacent(0,8));
+  check('horizontal adjacency',adjacent(0,1)&&adjacent(7,6)&&!adjacent(7,8));
   check('vertical adjacency',adjacent(0,8)&&!adjacent(0,9));
   let test=Array.from({length:64},(_,i)=>({type:colors[Math.floor(i/8)%T],special:0}));
   const old=board;board=test;check('detects horizontal runs',runs().set.size>0);
@@ -218,11 +218,16 @@ window.DragonChess={
   return {passed:results.filter(x=>x.ok).length,total:results.length,results};
  }
 };
-if(new URLSearchParams(location.search).has('test')){
- const report=window.DragonChess.runTests();document.body.insertAdjacentHTML('beforeend',`<pre id="test-report" style="position:fixed;z-index:99;bottom:0;left:0;background:#000;color:#fff;padding:12px">${JSON.stringify(report,null,2)}</pre>`);
-}
 $('enemyRoster').innerHTML=enemies.map((e,i)=>`<div class="enemy-card"><div class="portrait">${portrait(e.face)}</div><div><b>${i+1}. ${e.name}</b><small>${e.role} · ${e.hp} HP</small></div></div>`).join('');
 newGame();
+if(new URLSearchParams(location.search).has('test')){
+ const report=window.DragonChess.runTests();
+ const panel=document.createElement('pre');
+ panel.id='test-report';
+ panel.style.cssText='position:fixed;z-index:99;left:10px;bottom:10px;width:min(340px,calc(100vw - 20px));max-height:42vh;overflow:auto;background:#05080eeF;color:#d8e7f5;border:1px solid #52647a;border-radius:8px;padding:10px;font:11px/1.4 ui-monospace,monospace;white-space:pre-wrap;box-shadow:0 8px 24px #0008';
+ panel.textContent=JSON.stringify(report,null,2);
+ document.body.appendChild(panel);
+}
 })();
 </script>
 </body></html>
