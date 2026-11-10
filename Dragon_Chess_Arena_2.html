@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dragon Chess · Arena Edition</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#090d16;--panel:#101827;--panel2:#172235;--edge:#34445b;--gold:#e8c477;--text:#e9edf5;--muted:#91a0b8;--red:#e96b76}
+*{box-sizing:border-box}body{margin:0;color:var(--text);font-family:Inter,system-ui,sans-serif;background:radial-gradient(ellipse at 50% -15%,#354762 0,#151e2e 34%,#090d16 76%);min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.15;background-image:linear-gradient(#8290a31a 1px,transparent 1px),linear-gradient(90deg,#8290a31a 1px,transparent 1px);background-size:42px 42px}
+.shell{max-width:1220px;margin:auto;padding:22px 20px 30px;position:relative}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:17px}
+.logo{font:800 28px Cinzel,serif;letter-spacing:2px;color:#f1d49a;text-shadow:0 2px 18px #d9a44a44}.logo small{display:block;font:600 10px Inter,sans-serif;letter-spacing:4px;color:#8495ad;margin-top:3px}
+.header-right{font-size:12px;color:#a9b6c9;letter-spacing:1px;text-transform:uppercase}
+.game{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
+.main,.side{background:linear-gradient(180deg,#182337ee,#0e1625f5);border:1px solid #3a4a60;border-radius:15px;box-shadow:0 24px 70px #0005,inset 0 1px #ffffff09}
+.main{padding:15px}.side{padding:15px}
+.arena{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.fighter{height:122px;position:relative;overflow:hidden;border-radius:11px;border:1px solid #42536b;background:linear-gradient(135deg,#26344b,#121a2a);display:flex;align-items:center;padding:12px;gap:12px}
+.fighter:after{content:"";position:absolute;right:-35px;top:-45px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,#8aa8d522,transparent 70%)}
+.fighter.enemy{background:linear-gradient(135deg,#442a35,#1b1726);border-color:#6c4650}
+.portrait{width:78px;height:94px;flex:none;position:relative;display:grid;place-items:center;border-radius:8px;border:1px solid #8997a877;background:linear-gradient(145deg,#8cacc5,#34475d);box-shadow:inset 0 0 20px #0006;overflow:hidden}
+.portrait svg{width:100%;height:100%;filter:drop-shadow(0 5px 4px #0008)}
+.fighter.enemy .portrait{background:linear-gradient(145deg,#c66e71,#49232d)}
+.finfo{min-width:0;z-index:1}.name{font:700 14px Cinzel,serif;letter-spacing:.5px;margin-bottom:7px}.role{font-size:10px;color:#aab8ca;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:9px}
+.hpbar{height:7px;width:100%;min-width:95px;background:#080d15;border:1px solid #445064;border-radius:20px;overflow:hidden}.hpfill{height:100%;width:100%;background:linear-gradient(90deg,#6aa77e,#c7e4a0);transition:width .35s}.enemy .hpfill{background:linear-gradient(90deg,#9e3448,#ef7776)}
+.hpnum{font-size:10px;color:#aab7c9;margin-top:5px;display:flex;justify-content:space-between}
+.battle-tag{position:absolute;right:10px;top:9px;color:#d3b779;font:700 9px Cinzel;letter-spacing:1.5px;z-index:1}
+.stats{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#080e18;border:1px solid #2c3a50;border-radius:9px;margin-bottom:10px}
+.stat{display:flex;align-items:baseline;gap:7px}.stat strong{font:700 19px Cinzel;color:#f1d49a}.stat span{font-size:10px;letter-spacing:1.3px;color:#8392a9}
+.stage{font-size:11px;color:#b7c3d4;letter-spacing:1px}
+.timer{font:800 14px Cinzel;color:#f1d49a;min-width:35px;text-align:right}
+.timer.warn{color:#ff7b7e;animation:timerPulse .5s infinite alternate}
+@keyframes timerPulse{to{opacity:.45;transform:scale(1.08)}}
+.portrait:before{content:"";position:absolute;inset:3px;border:1px solid #ffffff28;border-radius:5px;z-index:2;pointer-events:none}
+.portrait:after{content:"";position:absolute;left:0;right:0;bottom:0;height:25%;background:linear-gradient(transparent,#080c14a8);pointer-events:none}
+.fighter .portrait{box-shadow:inset 0 0 0 2px #ffffff10,0 0 18px #0005}
+.fighter.enemy .portrait{box-shadow:inset 0 0 0 2px #ff9b9b20,0 0 20px #c14d5b22}
+
+.board-frame{position:relative;max-width:650px;margin:0 auto;padding:9px;border-radius:12px;background:linear-gradient(135deg,#34465d,#131c2b 45%,#46546b);box-shadow:0 9px 30px #0006,inset 0 0 0 1px #9eacbd22}
+.board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;padding:5px;background:radial-gradient(ellipse at center,#1c2a40,#0b111d);border:1px solid #60718a55;border-radius:8px;aspect-ratio:1;touch-action:manipulation}
+.tile{min-width:0;position:relative;display:grid;place-items:center;border:1px solid #52647a4d;border-radius:7px;background:linear-gradient(145deg,#27374c,#111a29);padding:0;cursor:pointer;overflow:hidden;transition:filter .12s,transform .12s,border-color .12s;user-select:none}
+.tile:hover{filter:brightness(1.25);transform:translateY(-1px)}
+.tile:active .gem{transform:scale(.92)}
+.tile .gem{animation:gemIn .22s ease-out}
+@keyframes gemIn{from{opacity:.3;transform:scale(.65)}to{opacity:1;transform:scale(1)}}.tile.sel{border:2px solid #f5d68d;box-shadow:0 0 0 2px #f5d68d22,0 0 20px #f2c66b55;transform:scale(.96);z-index:2}
+.tile .gem{width:83%;height:83%;display:block;filter:drop-shadow(0 3px 2px #0009);transition:transform .15s}
+.tile.ability{border-color:#f0d58b;box-shadow:inset 0 0 13px #f6d47b22,0 0 9px #f4c86b15}
+.tile.ability:after{content:"✦";position:absolute;right:3px;top:1px;color:#ffe5a1;font-size:10px;text-shadow:0 0 6px #ffc95b}
+.tile.ultimate{border:2px solid #ffe5a1;box-shadow:0 0 14px #ffd56b66,inset 0 0 16px #ffd56b33;animation:ultPulse 1.5s infinite}
+.tile.ultimate:after{content:"✹";position:absolute;right:1px;top:0;color:#fff1b9;font-size:12px;text-shadow:0 0 8px #ffd56b}
+.tile.matched{animation:shatter .28s ease-in forwards}
+@keyframes shatter{45%{transform:scale(1.22);filter:brightness(2)}100%{transform:scale(.05) rotate(30deg);opacity:0}}
+@keyframes ultPulse{50%{box-shadow:0 0 22px #ffd56b99,inset 0 0 18px #ffd56b55}}
+.fx{position:absolute;inset:0;pointer-events:none;z-index:4}
+.boardflash{animation:flash .28s ease-out}@keyframes flash{0%{box-shadow:0 0 0 0 #fff8}100%{box-shadow:0 0 0 18px #fff0}}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+button.action{border:1px solid #9e8855;background:linear-gradient(#f0d28d,#c49a50);color:#20190d;border-radius:7px;padding:10px 14px;font:800 11px Inter;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 3px 0 #71562b;transition:filter .15s,transform .1s}
+button.action:hover{filter:brightness(1.1)}button.action:active{transform:translateY(2px);box-shadow:0 1px 0 #71562b}
+button.secondary{background:linear-gradient(#27364c,#182437);color:#d8e1ed;border-color:#485a73;box-shadow:0 3px 0 #0b111b}
+button:disabled{opacity:.4;cursor:not-allowed}
+.note{font-size:11px;color:#a8b6c9;line-height:1.5}
+.sidehead{font:700 14px Cinzel;color:#e9d39d;letter-spacing:1px;padding-bottom:10px;border-bottom:1px solid #34445a;margin-bottom:12px}
+.enemy-card{display:flex;gap:11px;align-items:center;padding:10px;background:#0b121e;border:1px solid #2e3b50;border-radius:9px;margin-bottom:10px}
+.enemy-card .portrait{width:52px;height:62px;border-radius:5px}.enemy-card b{display:block;font:700 12px Cinzel;margin-bottom:4px}.enemy-card small{font-size:10px;color:#8e9eb5}
+.spelllist{display:grid;gap:8px;margin:10px 0 16px}.spell{display:flex;gap:9px;align-items:center;padding:8px;background:#0b121e;border:1px solid #29374c;border-radius:8px}
+.spellicon{width:30px;height:30px;display:grid;place-items:center;border-radius:6px;background:#26354b;font-size:19px}.spell b{display:block;font-size:11px}.spell small{color:#8798b0;font-size:10px}
+.rule{font-size:11px;color:#9caac0;line-height:1.7}.rule strong{color:#d9c28d}
+.status{min-height:47px;margin-top:12px;padding:10px 12px;background:#0a111d;border:1px solid #2a394e;border-radius:8px;color:#c5d0df;font-size:12px;display:flex;align-items:center}
+.toast{position:fixed;left:50%;top:18%;transform:translate(-50%,-10px);opacity:0;pointer-events:none;background:#101a2a;border:1px solid #e4c47a;color:#f4dfae;padding:12px 18px;border-radius:10px;z-index:9;box-shadow:0 12px 40px #0008;font:700 13px Cinzel;transition:all .25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.modalbg{position:fixed;inset:0;background:#03060bcc;display:none;align-items:center;justify-content:center;padding:20px;z-index:10;backdrop-filter:blur(5px)}.modalbg.show{display:flex}.modal{width:min(440px,100%);padding:27px;background:linear-gradient(160deg,#25344b,#101827);border:1px solid #8b7951;border-radius:14px;text-align:center;box-shadow:0 25px 80px #000a}.modal h2{font:800 25px Cinzel;color:#f0d291;margin:0 0 12px}.modal p{color:#aebbd0;font-size:13px;line-height:1.6}.modal button{margin-top:12px}
+@media(max-width:900px){.game{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sidehead{grid-column:1/-1}.spelllist{margin:0}.rule{align-self:center}}
+@media(max-width:560px){.shell{padding:12px 9px}.main,.side{padding:10px}.fighter{height:100px;padding:8px;gap:7px}.portrait{width:58px;height:75px}.name{font-size:11px}.role{font-size:8px}.hpbar{min-width:75px}.board{gap:3px;padding:3px}.tile{border-radius:4px}.stats{padding:8px}.stat strong{font-size:16px}.stat span{font-size:8px}.side{display:block}.spelllist{margin:10px 0}.header-right{display:none}}
+
+.build{display:inline-block;margin-left:8px;padding:3px 6px;border:1px solid #58677b;border-radius:5px;color:#d5c18d;font-size:9px}
+button.tile{appearance:none;-webkit-appearance:none}
+button.tile:focus-visible{outline:2px solid #fff1b6;outline-offset:1px}
+.controls button{white-space:nowrap}
+.status{gap:8px}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><div class="logo">DRAGON CHESS<small>THE FROSTFIRE ARENA</small></div><div class="header-right">MATCH-3 COMBAT · HEROES & SPELLS <span class="build">v2.0</span></div></header>
+<div class="game">
+<section class="main">
+ <div class="arena">
+  <div class="fighter" id="playerCard"><div class="portrait" id="playerPortrait"></div><div class="finfo"><div class="name">ВОИН АЙСВРЕКА</div><div class="role">CHAMPION</div><div class="hpbar"><div class="hpfill" id="playerFill"></div></div><div class="hpnum"><span>Здоровье</span><b id="playerHp">100 / 100</b></div></div><div class="battle-tag">ALLY</div></div>
+  <div class="fighter enemy" id="enemyCard"><div class="portrait" id="enemyPortrait"></div><div class="finfo"><div class="name" id="enemyName">ЛЕДЯНОЙ ГУЛЬ</div><div class="role" id="enemyRole">ENEMY · 1/3</div><div class="hpbar"><div class="hpfill" id="enemyFill"></div></div><div class="hpnum"><span>Здоровье</span><b id="enemyHp">45 / 45</b></div></div><div class="battle-tag">FOE</div></div>
+ </div>
+ <div class="stats"><div class="stat"><strong id="score">00000</strong><span>СЧЁТ</span></div><div class="stat"><strong id="turn">01</strong><span>ХОД</span></div><div class="stage" id="stage">ENCOUNTER 1 / 3</div><div class="stage timer" id="timer">25s</div></div>
+ <div class="board-frame" id="boardFrame"><div class="board" id="board" aria-label="Игровое поле 8 на 8"></div></div>
+ <div class="controls"><div><button class="action secondary" id="hint">Подсказка</button> <button class="action secondary" id="shuffle">Перемешать</button> <button class="action secondary" id="sound">Звук: выкл.</button></div><button class="action" id="restart">Новая игра</button></div>
+ <div class="status" id="status" role="status" aria-live="polite">Перетащи кристалл на соседний или нажми два соседних кристалла.</div>
+</section>
+<aside class="side">
+ <div class="sidehead">ПРОТИВНИКИ</div><div id="enemyRoster"></div>
+ <div class="sidehead">ГЕРОЙСКИЕ КРИСТАЛЛЫ</div>
+ <div class="spelllist">
+  <div class="spell"><div class="spellicon">🔷</div><div><b>Crystal Maiden</b><small>Ледяной взрыв · 4 в ряд</small></div></div>
+  <div class="spell"><div class="spellicon">🔥</div><div><b>Lina</b><small>Огненный залп · 4 в ряд</small></div></div>
+  <div class="spell"><div class="spellicon">🪽</div><div><b>Vengeful Spirit</b><small>Ультимейт · 5+ в ряд</small></div></div>
+  <div class="spell"><div class="spellicon">🕷️</div><div><b>Broodmother</b><small>Похищение жизни · особый кристалл</small></div></div>
+ </div>
+ <div class="sidehead">БОЕВОЙ РИТМ</div><div class="rule" style="margin-bottom:14px">⏳ <strong>25 секунд</strong> на ход. Если время истекло — противник контратакует. Старайся собирать длинные цепочки.</div><div class="sidehead">ПРАВИЛА</div>
+ <div class="rule"><strong>3 кристалла</strong> — 1 урон за каждый.<br><strong>4 в ряд</strong> — создаётся ability gem.<br><strong>5+</strong> — мощный ultimate gem.<br>Совпадение с особым камнем активирует эффект. Враги атакуют по таймеру. Между боями герой восстанавливает здоровье.</div>
+</aside>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modalbg" id="modal"><div class="modal"><h2 id="modalTitle">ПОБЕДА</h2><p id="modalText"></p><button class="action" id="modalBtn">Продолжить</button></div></div>
+<script>
+(()=>{'use strict';
+const W=8,T=5,MAXHP=100,TURN_SECONDS=25,colors=['cm','lina','venge','brood','wyvern'];
+const heroes={cm:{name:'Crystal Maiden',abbr:'CM',color:'#78c9e8',face:'cm'},lina:{name:'Lina',abbr:'LINA',color:'#ef7969',face:'lina'},venge:{name:'Vengeful Spirit',abbr:'VS',color:'#9a7de4',face:'venge',},brood:{name:'Broodmother',abbr:'BM',color:'#a96bd1',face:'brood'},wyvern:{name:'Winter Wyvern',abbr:'WW',color:'#64b9d1',face:'wyvern'}};
+const enemies=[{name:'Ледяной гуль',hp:45,face:'ghoul',role:'CREEP'},{name:'Проклятый рыцарь',hp:65,face:'knight',role:'ELITE'},{name:'Древний дракон',hp:100,face:'dragon',role:'BOSS'}];
+const $=id=>document.getElementById(id);let board=[],sel=null,score=0,turn=0,hp=MAXHP,enemy=0,ehp=45,busy=false,over=false,dragFrom=null,enemyTick=0,abilityCount=0,clock=TURN_SECONDS,timerId=null,soundOn=false,audioCtx=null;
+function portrait(face){
+ const shapes={
+ cm:`<path fill="#a9d8e8" d="M13 35 6 5 25 18 38 2 44 20 57 8 52 37Z"/><path fill="#d9f1f7" d="M18 26Q32 13 48 27L51 50Q33 67 15 49Z"/><path fill="#7bb6d3" d="M17 34 7 17 22 24M48 30 59 17 46 24"/><path fill="#263c59" d="M16 44Q32 34 49 44L58 70H7Z"/><path fill="#c5e5ee" d="M25 34h5v3h-5m10 0h5v3h-5"/><path fill="#537d9d" d="M28 45q5 5 10 0"/>`,
+ lina:`<path fill="#f0a66b" d="M11 31 4 8 22 17 39 1 47 18 59 8 52 38Z"/><path fill="#f7c59a" d="M17 27Q32 14 48 27L51 50Q33 67 15 49Z"/><path fill="#e85f45" d="M12 40 4 22 20 29M49 30 60 20 51 42"/><path fill="#8d2c37" d="M16 45Q33 36 50 45L58 70H7Z"/><path fill="#49202c" d="M25 35h5v3h-5m10 0h5v3h-5"/><path fill="#b53e35" d="M28 46q5 4 10 0"/>`,
+ venge:`<path fill="#8f91ed" d="M13 35 5 6 23 18 39 2 47 19 60 7 52 38Z"/><path fill="#c5c4ff" d="M17 27Q32 14 48 27L51 50Q33 67 15 49Z"/><path fill="#5c5bd1" d="M17 33 5 19 21 25M49 30 60 18 46 25"/><path fill="#333477" d="M16 45Q33 36 50 45L58 70H7Z"/><path fill="#34345e" d="M25 35h5v3h-5m10 0h5v3h-5"/><path fill="#7778ce" d="M28 46q5 5 10 0"/>`,
+ brood:`<path fill="#6e3b83" d="M12 36 5 5 24 20 39 2 48 20 60 7 52 40Z"/><path fill="#b887d3" d="M17 27Q32 14 48 27L51 50Q33 67 15 49Z"/><path fill="#4c2866" d="M10 35 3 18 20 27M50 30 61 18 47 27"/><path fill="#3c244d" d="M16 45Q33 36 50 45L58 70H7Z"/><path fill="#ee9df5" d="M24 35h6v4h-6m10 0h6v4h-6"/><path fill="#7e4e9c" d="M28 47q5 4 10 0"/>`,
+ wyvern:`<path fill="#7ac9dc" d="M11 36 3 5 24 18 39 1 48 19 61 7 52 39Z"/><path fill="#bcebf2" d="M17 27Q32 14 48 27L51 50Q33 67 15 49Z"/><path fill="#4c9bb6" d="M12 34 4 17 21 26M49 30 60 17 46 25"/><path fill="#28556e" d="M16 45Q33 36 50 45L58 70H7Z"/><path fill="#2b4c62" d="M25 35h5v3h-5m10 0h5v3h-5"/><path fill="#6eabc3" d="M28 46q5 5 10 0"/>`,
+ ghoul:`<path fill="#5e7c78" d="M12 33 8 10 24 20 40 5 49 22 59 11 52 42Z"/><path fill="#a4b7a3" d="M17 28Q32 14 48 27L51 50Q33 67 15 49Z"/><path fill="#526f68" d="M16 45Q33 36 50 45L58 70H7Z"/><path fill="#c8efb2" d="M23 35h7v4h-7m11 0h7v4h-7"/><path fill="#425c53" d="M28 49h11l-5 5Z"/>`,
+ knight:`<path fill="#b69d82" d="M13 34 7 8 24 20 39 3 49 20 59 8 52 40Z"/><path fill="#c9b99e" d="M17 27Q32 14 48 27L51 50Q33 67 15 49Z"/><path fill="#6b6258" d="M16 45Q33 36 50 45L58 70H7Z"/><path fill="#f4d68c" d="M23 35h7v4h-7m11 0h7v4h-7"/><path fill="#776c5d" d="M28 48h11l-5 5Z"/>`,
+ dragon:`<path fill="#d36d71" d="M8 38 1 4 25 19 39 0 49 20 63 5 53 42Z"/><path fill="#e99b91" d="M17 27Q32 14 48 27L51 50Q33 67 15 49Z"/><path fill="#9d414c" d="M6 38 2 19 20 28M51 30 63 18 46 27"/><path fill="#652b39" d="M16 45Q33 36 50 45L58 70H7Z"/><path fill="#fff0b1" d="M23 35h7v4h-7m11 0h7v4h-7"/><path fill="#a94b50" d="M28 48h11l-5 5Z"/>`
+ };
+ return `<svg viewBox="0 0 64 76" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="shine" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient></defs>${shapes[face]||shapes.ghoul}<rect width="64" height="76" fill="url(#shine)"/></svg>`;
+}
+function gemSvg(type,special=0){
+ const h=heroes[type],face=portrait(h.face);
+ return `<svg class="gem" viewBox="0 0 80 80" aria-hidden="true"><defs><linearGradient id="g-${type}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${h.color}" stop-opacity=".85"/><stop offset=".55" stop-color="#101a2b"/><stop offset="1" stop-color="${h.color}" stop-opacity=".7"/></linearGradient><clipPath id="clip-${type}"><path d="M40 3 72 22 72 58 40 77 8 58 8 22Z"/></clipPath></defs><path d="M40 3 72 22 72 58 40 77 8 58 8 22Z" fill="url(#g-${type})" stroke="${h.color}" stroke-width="2"/><g clip-path="url(#clip-${type})">${face.replace('<svg viewBox="0 0 64 76" xmlns="http://www.w3.org/2000/svg">','').replace('</svg>','')}</g><path d="M40 3 72 22 40 31 8 22Z" fill="#fff" opacity=".16"/><path d="M8 22 40 31 40 77 8 58Z" fill="#000" opacity=".12"/>${special?`<circle cx="40" cy="40" r="34" fill="none" stroke="#ffe8a4" stroke-width="${special===2?3:1.5}" stroke-dasharray="${special===2?'3 3':'none'}"/><text x="40" y="15" text-anchor="middle" font-size="14" fill="#fff3b5" stroke="#72511e" stroke-width=".5">${special===2?'✹':'✦'}</text>`:''}</svg>`;
+}
+function random(){return colors[Math.floor(Math.random()*T)]}
+function runs(){
+ let out=new Set(),groups=[];
+ for(let r=0;r<W;r++){let c=0;while(c<W){let s=c,v=board[r*W+c];while(c<W&&board[r*W+c]?.type===v?.type&&board[r*W+c]?.type)c++;if(c-s>=3){let a=[];for(let x=s;x<c;x++){out.add(r*W+x);a.push(r*W+x)}groups.push(a)}else c=s+1}}
+ for(let c=0;c<W;c++){let r=0;while(r<W){let s=r,v=board[r*W+c]?.type;while(r<W&&board[r*W+c]?.type===v&&v)r++;if(r-s>=3){let a=[];for(let x=s;x<r;x++){out.add(x*W+c);a.push(x*W+c)}groups.push(a)}else r=s+1}}
+ return {set:out,groups};
+}
+function hasMatch(){return runs().set.size>0}
+function adjacent(a,b){return Math.abs(a-b)===W||(Math.floor(a/W)===Math.floor(b/W)&&Math.abs(a-b)===1)}
+function swap(a,b){[board[a],board[b]]=[board[b],board[a]]}
+function makeBoard(){board=[];for(let i=0;i<W*W;i++){let t;do{t=random()}while((i%W>=2&&board[i-1]?.type===t&&board[i-2]?.type===t)||(i>=2*W&&board[i-W]?.type===t&&board[i-2*W]?.type===t));board.push({type:t,special:0})}if(!validMove())mix()}
+function validMove(){for(let i=0;i<64;i++)for(let j of [i+1,i+W]){if(j>=64||!adjacent(i,j))continue;swap(i,j);let ok=hasMatch();swap(i,j);if(ok)return true}return false}
+function mix(){
+ let guard=0;
+ do{
+  for(let i=board.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[board[i],board[j]]=[board[j],board[i]]}
+  guard++;
+ }while((hasMatch()||!validMove())&&guard<250);
+ if(hasMatch()||!validMove())makeBoard();
+ render();
+}
+function render(){const el=$('board');el.innerHTML='';board.forEach((g,i)=>{let b=document.createElement('button');b.className='tile'+(sel===i?' sel':'')+(g.special?' ability':'')+(g.special===2?' ultimate':'');b.dataset.i=i;b.draggable=true;b.setAttribute('aria-label',`${heroes[g.type].name}${g.special?' ability':''}`);b.innerHTML=gemSvg(g.type,g.special);b.addEventListener('click',()=>pick(i));b.addEventListener('dragstart',e=>{dragFrom=i;e.dataTransfer.setData('text/plain',String(i));e.dataTransfer.effectAllowed='move'});b.addEventListener('dragover',e=>e.preventDefault());b.addEventListener('drop',e=>{e.preventDefault();let from=dragFrom??Number(e.dataTransfer.getData('text/plain'));if(Number.isInteger(from))move(from,i);dragFrom=null});el.appendChild(b)});$('score').textContent=String(score).padStart(5,'0');$('turn').textContent=String(turn+1).padStart(2,'0');$('playerHp').textContent=`${hp} / ${MAXHP}`;$('playerFill').style.width=hp/MAXHP*100+'%';$('enemyHp').textContent=`${ehp} / ${enemies[enemy].hp}`;$('enemyFill').style.width=ehp/enemies[enemy].hp*100+'%';$('enemyName').textContent=enemies[enemy].name;$('enemyRole').textContent=`${enemies[enemy].role} · ${enemy+1}/3`;$('enemyPortrait').innerHTML=portrait(enemies[enemy].face);$('stage').textContent=`ENCOUNTER ${enemy+1} / 3`; $('playerPortrait').innerHTML=portrait('wyvern')}
+function pick(i){if(busy||over)return;if(sel===null){sel=i;render();return}if(sel===i){sel=null;render();return}if(!adjacent(sel,i)){sel=i;render();return}move(sel,i)}
+function move(a,b){if(busy||over||!adjacent(a,b))return;clock=TURN_SECONDS;updateTimer();sel=null;swap(a,b);if(!hasMatch()){swap(a,b);render();say('Этот обмен не создаёт совпадение.');return}turn++;render();resolve()}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function say(t){$('status').textContent=t}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1500)}
+async function resolve(){busy=true;let chain=0;while(true){let {set,groups}=runs();if(!set.size)break;chain++;let n=set.size,damage=n,heal=0,extra=0;
+ // Special gems are activated when matched, including any special inside the cleared set
+ set.forEach(i=>{const g=board[i];if(g?.special===1){extra+=8;toast('ABILITY GEM · +8 DAMAGE')}if(g?.special===2){extra+=22;heal+=12;toast('ULTIMATE · +22 DAMAGE / HEAL')}if(g?.type==='brood'){heal+=2}});
+ // create a special from the longest run of 4/5+; retain at center after gravity
+ let create=null;groups.sort((a,b)=>b.length-a.length);const group=groups[0];
+ if(group&&group.length>=4){let type=board[group[0]].type;create={index:group[Math.floor(group.length/2)],type,special:group.length>=5?2:1};extra+=group.length>=5?15:5}
+ let dmg=damage+extra;ehp=Math.max(0,ehp-dmg);hp=Math.min(MAXHP,hp+heal);score+=n*100+extra*100+(chain-1)*250;
+ set.forEach(i=>{let cell=$('board').children[i];if(cell)cell.classList.add('matched');board[i]=null});
+ $('boardFrame').classList.add('boardflash');render();say(`Комбо ×${chain}: ${n} кристаллов · ${dmg} урона${heal?` · +${heal} HP`:''}`);
+ await wait(300);$('boardFrame').classList.remove('boardflash');
+ // gravity and refill, preserving special at creation slot
+ for(let c=0;c<W;c++){let write=W-1;for(let r=W-1;r>=0;r--){let idx=r*W+c;if(board[idx]){board[write*W+c]=board[idx];if(write!==r)board[idx]=null;write--}}for(let r=write;r>=0;r--)board[r*W+c]={type:random(),special:0}}
+ if(create){let col=create.index%W;let target=null;for(let r=0;r<W;r++){let idx=r*W+col;if(board[idx]?.type===create.type){target=idx;break}}if(target===null)target=(Math.floor(create.index/W))*W+col;board[target]={type:create.type,special:create.special}}
+ render();await wait(230);if(ehp<=0){await winEnemy();break}
+ }
+ if(!over){enemyTick++;if(enemyTick>=2){enemyTick=0;let hit=8+enemy*3;hp=Math.max(0,hp-hit);say(`${enemies[enemy].name} атакует: −${hit} HP.`);toast(`−${hit} HP`);$('playerCard').animate([{filter:'brightness(1)'},{filter:'brightness(2) sepia(1)'},{filter:'brightness(1)'}],{duration:420});render();if(hp<=0)finish(false)}else say('Ход врага готовится… сделай ещё комбинацию.');if(!validMove())mix()}
+ busy=!!$('modal').classList.contains('show')}
+async function winEnemy(){score+=1000+enemy*1000;toast('ПРОТИВНИК ПОВЕРЖЕН');if(enemy===2){finish(true);return}enemy++;ehp=enemies[enemy].hp;hp=Math.min(MAXHP,hp+25);enemyTick=0;render();$('modalTitle').textContent='ПРОТИВНИК ПОВЕРЖЕН';$('modalText').textContent=`Следующий враг: ${enemies[enemy].name}. Герой восстановил 25 здоровья.`;$('modalBtn').textContent='В бой';$('modal').classList.add('show');busy=true}
+function finish(win){over=true;busy=false;$('modalTitle').textContent=win?'ПОБЕДА!':'ПОРАЖЕНИЕ';$('modalText').textContent=win?`Все враги побеждены. Финальный счёт: ${score.toLocaleString('ru-RU')}.`:`Герой пал. Счёт: ${score.toLocaleString('ru-RU')}.`; $('modalBtn').textContent='Новая игра';$('modal').classList.add('show')}
+function updateTimer(){const t=$('timer');t.textContent=clock+'s';t.classList.toggle('warn',clock<=7)}
+function tickTimer(){if(over||busy)return;clock--;updateTimer();if(clock<=0){clock=TURN_SECONDS;updateTimer();enemyTick++;let hit=10+enemy*4;hp=Math.max(0,hp-hit);toast('ВРЕМЯ · −'+hit+' HP');$('playerCard').animate([{filter:'brightness(1)'},{filter:'brightness(2) sepia(1)'},{filter:'brightness(1)'}],{duration:450});render();if(hp<=0)finish(false);else say('Время вышло: враг наносит '+hit+' урона.')}
+}
+function newGame(){score=0;turn=0;hp=MAXHP;enemy=0;ehp=enemies[0].hp;busy=false;over=false;sel=null;enemyTick=0;clock=TURN_SECONDS;$('modal').classList.remove('show');makeBoard();render();updateTimer();say('Перетащи кристалл на соседний или выбери два соседних.')}
+
+
+$('modalBtn').addEventListener('click',()=>{if(over)newGame();else{$('modal').classList.remove('show');busy=false;clock=TURN_SECONDS;updateTimer();say('Продолжай комбинации!')}})
+$('restart').addEventListener('click',newGame);$('shuffle').addEventListener('click',()=>{if(!busy&&!over){mix();say('Поле перемешано.')}})
+$('hint').addEventListener('click',()=>{if(busy||over)return;for(let i=0;i<64;i++)for(let j of [i+1,i+W]){if(j>=64||!adjacent(i,j))continue;swap(i,j);if(hasMatch()){swap(i,j);sel=i;render();say('Подсказка: выделен кристалл для выгодного обмена.');return}swap(i,j)}mix();say('Ходов не было — поле перемешано.')});
+
+function beep(freq=520,duration=.08,type='sine'){
+ if(!soundOn)return;
+ try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.045,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration)}catch(e){}
+}
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;$('sound').textContent='Звук: '+(soundOn?'вкл.':'выкл.');if(soundOn)beep(660,.12)});
+const originalMove=move;
+move=function(a,b){const before=turn;originalMove(a,b);if(turn>before)beep(440,.07)};
+const originalFinish=finish;
+finish=function(win){beep(win?880:150,.25,win?'triangle':'sawtooth');originalFinish(win)};
+window.DragonChess={
+ runTests(){
+  const results=[];const check=(name,ok)=>results.push({name,ok:!!ok});
+  const save=board.map(x=>({...x})), oldSel=sel;
+  check('board contains 64 cells',board.length===64);
+  check('all gem types are known',board.every(x=>heroes[x.type]));
+  check('board starts without matches',!hasMatch());
+  check('board has at least one legal move',validMove());
+  check('horizontal adjacency',adjacent(0,1)&&adjacent(7,6)&&!adjacent(0,8));
+  check('vertical adjacency',adjacent(0,8)&&!adjacent(0,9));
+  let test=Array.from({length:64},(_,i)=>({type:colors[Math.floor(i/8)%T],special:0}));
+  const old=board;board=test;check('detects horizontal runs',runs().set.size>0);
+  board=Array.from({length:64},(_,i)=>({type:colors[i%8%T],special:0}));check('detects vertical runs',runs().set.size>0);
+  board=old;
+  const swapTest=board[0];swap(0,1);swap(0,1);check('swap restores board',board[0]===swapTest);
+  check('score and HP stay in sane ranges',score>=0&&hp>=0&&hp<=MAXHP);
+  board=save;sel=oldSel;render();
+  return {passed:results.filter(x=>x.ok).length,total:results.length,results};
+ }
+};
+if(new URLSearchParams(location.search).has('test')){
+ const report=window.DragonChess.runTests();document.body.insertAdjacentHTML('beforeend',`<pre id="test-report" style="position:fixed;z-index:99;bottom:0;left:0;background:#000;color:#fff;padding:12px">${JSON.stringify(report,null,2)}</pre>`);
+}
+$('enemyRoster').innerHTML=enemies.map((e,i)=>`<div class="enemy-card"><div class="portrait">${portrait(e.face)}</div><div><b>${i+1}. ${e.name}</b><small>${e.role} · ${e.hp} HP</small></div></div>`).join('');
+newGame();
+})();
+</script>
+</body></html>
