@@ -220,7 +220,7 @@ header{margin-bottom:20px}
 }
 
 
-/* v5.1: squad roster, full character panels, and centered board */
+/* v6.0: squad roster, full character panels, and centered board */
 #playerCard{grid-row:1;min-height:0;height:auto;display:grid;grid-template-columns:84px minmax(0,1fr);grid-template-rows:auto;align-items:center;gap:10px;padding:10px}
 #playerCard .portrait{width:84px;height:112px;grid-column:1;grid-row:1;border-radius:7px}
 #playerCard .finfo{grid-column:2;grid-row:1;padding:8px}
@@ -371,6 +371,61 @@ button.action:not(.secondary){background:linear-gradient(180deg,#ffe4a3,#ce8b2e)
 .boss-attack-lock .tile{pointer-events:none}
 @media(max-width:650px){.player-health{width:100%;min-width:0;order:0;padding:0 3px}.player-health-label{font-size:8px}.controls{flex-wrap:wrap}}
 
+
+/* ART DIRECTION — cinematic boss scene and luminous jewel field */
+:root{--gold:#e9b966;--gold-hi:#fff0c7;--ember:#ff6a2f}
+body{background:radial-gradient(ellipse at 67% 34%,#26364b 0%,#111d30 42%,#060b14 100%);background-attachment:fixed}
+body:before{opacity:.13;background-image:radial-gradient(#d8d0bd 0.65px,transparent 0.65px);background-size:42px 42px}
+.shell{padding:8px 10px 10px}
+.game{grid-template-columns:minmax(0,1.58fr) minmax(365px,1fr);grid-template-rows:minmax(0,1fr) auto;gap:12px}
+.board-frame{width:100%;height:100%;max-height:none;aspect-ratio:auto;max-width:none;align-self:stretch;justify-self:stretch;padding:12px;border-radius:18px;border:1px solid #e4b66d;background:linear-gradient(145deg,#a87742 0%,#26354b 12%,#0b1422 45%,#9a713c 100%);box-shadow:0 0 0 1px #fff1c04b inset,0 0 0 4px #101a2a,0 0 34px #ffb54c26,0 18px 45px #000b;position:relative}
+.board-frame:before{content:"";position:absolute;inset:5px;border:1px solid #e3bb7d55;border-radius:12px;pointer-events:none;z-index:2}
+.board{width:100%;height:100%;aspect-ratio:auto;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));gap:5px;padding:7px;border:1px solid #c39a5b88;border-radius:10px;background:radial-gradient(ellipse at 50% 34%,#253a56,#0b1422 74%,#060c16);box-shadow:inset 0 0 32px #000b}
+.tile{border-radius:8px;border:1px solid #8caac744;background:linear-gradient(145deg,#344b66 0%,#16263a 48%,#0c1727 100%);box-shadow:inset 0 1px 0 #ffffff26,inset 0 -12px 17px #0007,0 2px 6px #0008;overflow:visible}
+.tile:before{content:"";position:absolute;inset:2px;border-radius:6px;pointer-events:none;background:linear-gradient(135deg,#ffffff12,transparent 42%,#00000020)}
+.tile .gem{width:97%;height:97%;filter:drop-shadow(0 6px 5px #000c) drop-shadow(0 0 8px color-mix(in srgb,var(--gem-color,#90dfff),transparent 68%));transition:transform .28s cubic-bezier(.18,.78,.24,1),filter .28s}
+.tile:hover .gem{transform:translateY(-2px) scale(1.045);filter:drop-shadow(0 6px 6px #000d) drop-shadow(0 0 12px #d9efff66)}
+.tile.sel{border:2px solid #fff0bd;box-shadow:0 0 0 2px #ffc95b44,0 0 26px #ffcf69aa,inset 0 0 18px #fff1c044;transform:scale(1.035);z-index:3}
+.tile.matched{animation:crystalBurst .64s cubic-bezier(.16,.82,.2,1) forwards;z-index:8}
+.tile.matched:before{inset:-10%;border-radius:50%;background:radial-gradient(circle,#fffbd8 0%,#ffd064b8 18%,#ff832e60 40%,transparent 72%);animation:crystalFlash .62s ease-out forwards}
+.tile.matched:after{content:"✧";position:absolute;z-index:9;left:50%;top:50%;font-size:32px;color:#fff8ce;text-shadow:0 0 12px #fff,0 0 25px #ffb34b;transform:translate(-50%,-50%);animation:crystalSpark .64s ease-out forwards}
+@keyframes crystalBurst{0%{transform:scale(1) rotate(0);opacity:1;filter:brightness(1)}18%{transform:scale(1.2) rotate(6deg);filter:brightness(2.8) saturate(1.8)}42%{transform:scale(.86) rotate(-9deg);opacity:.95;filter:brightness(2.2)}72%{transform:scale(.35) rotate(18deg);opacity:.5;filter:blur(1px) brightness(2)}100%{transform:scale(.015) rotate(42deg);opacity:0;filter:blur(4px)}}
+@keyframes crystalFlash{0%{opacity:0;transform:scale(.15)}28%{opacity:1;transform:scale(1.15)}100%{opacity:0;transform:scale(2)}}
+@keyframes crystalSpark{0%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(-30deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.4) rotate(25deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.7) rotate(85deg)}}
+.shard-burst{position:fixed;z-index:30;width:2px;height:2px;pointer-events:none}
+.gem-shard{position:absolute;left:0;top:0;width:9px;height:13px;background:linear-gradient(135deg,#fff,var(--gem-color),#28384c);border:1px solid #ffffffaa;clip-path:polygon(50% 0,100% 30%,72% 100%,13% 78%,0 25%);box-shadow:0 0 8px var(--gem-color);animation:shardScatter .64s cubic-bezier(.16,.78,.3,1) forwards}
+@keyframes shardScatter{0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(0)}16%{opacity:1;transform:translate(-50%,-50%) scale(1.05) rotate(15deg)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.16) rotate(var(--rot))}}
+#enemyCard,#enemyCard.boss-mode{grid-column:2;grid-row:1 / span 2;min-height:0;height:100%;position:relative;isolation:isolate;overflow:hidden;padding:15px;border:1px solid #e1aa65;border-radius:16px;background-color:#0b1421;background-image:linear-gradient(180deg,#050b1540 0%,#070d1640 38%,#080e1ef0 100%),url("data:image/webp;base64,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");background-repeat:no-repeat;background-position:center,center 8%;background-size:100% 100%,100% auto;box-shadow:0 0 0 1px #fff0bd3d inset,0 0 30px #f2853826,0 16px 44px #000b}
+#enemyCard:before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,#07101b0a 0%,#09132100 24%,#07101b80 56%,#070e1bf8 100%),radial-gradient(ellipse at 50% 42%,#f26b302b,transparent 64%);pointer-events:none}
+#enemyCard .portrait{display:none!important}
+#enemyCard .boss-scene{position:absolute;z-index:0;left:0;right:0;top:19%;bottom:3%;pointer-events:none;opacity:.98}
+#enemyCard .boss-scene svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 12px 18px #000b)}
+#enemyCard .finfo{position:absolute;z-index:4;top:13px;left:13px;right:13px;width:auto;margin:0;padding:12px 14px 11px;border-radius:10px;border:1px solid #e6b76c;background:linear-gradient(112deg,#080f1dee,#151d2de3);box-shadow:0 8px 26px #000a,0 0 18px #ffb14b26;backdrop-filter:blur(6px)}
+#enemyCard .name{font:800 clamp(16px,1.5vw,23px) Cinzel,serif;letter-spacing:1px;color:#ffe2aa;text-shadow:0 2px 12px #000}
+#enemyCard .role{color:#f5bf83;font-size:10px;letter-spacing:1.6px}
+#enemyCard .hpbar{height:13px;border-color:#a45b52;background:#08090f}
+#enemyCard .hpfill{background:linear-gradient(90deg,#8d1927,#ea3f31,#ffb34f);box-shadow:0 0 14px #f43}
+#enemyCard .hpnum{color:#f4d8b2}
+#enemyCard .battle-tag{display:none}
+.boss-clock{position:absolute;z-index:4;left:13px;right:13px;bottom:14px;padding:11px 13px;border:1px solid #b88a54;border-radius:9px;background:linear-gradient(110deg,#080f1df2,#151d2df0);box-shadow:0 8px 25px #000b}
+.boss-clock-label{color:#f1d7a6}.boss-clock-label b{color:#ffda92}
+.boss-clock-track i{background:linear-gradient(90deg,#ff8a2c,#ffdc8b);box-shadow:0 0 15px #ff9e38}
+#enemyCard.boss-winding{animation:dragonWindup .65s ease-in-out}
+#enemyCard.boss-attacking{animation:dragonLunge .72s cubic-bezier(.18,.78,.2,1)}
+#enemyCard.boss-attacking:after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at 14% 38%,#fff5c6da 0%,#ff8a398a 13%,#e9412544 32%,transparent 61%);animation:breathGlow .72s ease-out}
+#enemyCard.boss-attacking .boss-scene{animation:dragonBodyLunge .72s cubic-bezier(.16,.78,.25,1)}
+@keyframes dragonWindup{0%,100%{filter:brightness(1)}45%{filter:brightness(1.45) saturate(1.3);transform:translateX(2px)}}
+@keyframes dragonLunge{0%,100%{transform:translateX(0) scale(1);filter:brightness(1)}18%{transform:translateX(-9px) scale(1.02);filter:brightness(1.8) saturate(1.4)}40%{transform:translateX(5px) scale(.99)}65%{transform:translateX(-2px)}}
+@keyframes dragonBodyLunge{0%,100%{transform:translateX(0) scale(1)}20%{transform:translateX(-13px) scale(1.035)}45%{transform:translateX(5px) scale(.99)}}
+@keyframes breathGlow{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+.fire-wave{height:54px;filter:blur(1px) drop-shadow(0 0 12px #ff7a21) drop-shadow(0 0 28px #ff3c16)}
+.controls{width:100%;border:1px solid #a27a4c;background:linear-gradient(100deg,#081221,#1a2b42 55%,#0a1322);box-shadow:0 8px 25px #0008,0 0 18px #f0b6601a}
+.player-health{width:min(260px,30%);min-width:165px}
+.player-health-label{color:#e6d5b6}
+.player-health-label b{color:#c7f0a9}
+.player-health .hpbar{height:10px;border-color:#77916f}
+@media(max-width:950px){.game{grid-template-columns:minmax(0,1.35fr) minmax(280px,.95fr);gap:8px}.board-frame{width:100%;height:100%;max-height:none}}
+@media(max-width:650px){.game{grid-template-columns:1fr;grid-template-rows:auto minmax(330px,48vh) auto}.board-frame{grid-column:1;grid-row:1;width:100%;height:auto;aspect-ratio:1}.board{width:100%;height:100%}#enemyCard,#enemyCard.boss-mode{grid-column:1;grid-row:2;min-height:330px;height:48vh}.controls{grid-column:1;grid-row:3}}
 </style>
 </head>
 <body>
@@ -380,7 +435,50 @@ button.action:not(.secondary){background:linear-gradient(180deg,#ffe4a3,#ce8b2e)
 <section class="main">
  <div class="arena" id="arena">
   <div class="fighter" id="playerCard"><div class="portrait" id="playerPortrait"></div><div class="hit-layer" id="playerHitLayer"></div><div class="finfo"><div class="name">ВОИН АЙСВРЕКА</div><div class="role">CHAMPION</div><div class="hpbar"><div class="hpfill"></div></div><div class="hpnum"><span>Здоровье</span><b>100 / 100</b></div></div><div class="battle-tag">ALLY</div></div>
-  <div class="fighter enemy" id="enemyCard"><div class="portrait" id="enemyPortrait"></div><div class="hit-layer" id="enemyHitLayer"></div><div class="finfo"><div class="name" id="enemyName">ЛЕДЯНОЙ ГУЛЬ</div><div class="role" id="enemyRole">ENEMY · 1/3</div><div class="hpbar"><div class="hpfill" id="enemyFill"></div></div><div class="hpnum"><span>Здоровье</span><b id="enemyHp">45 / 45</b></div></div><div class="boss-clock"><div class="boss-clock-label"><span>АТАКА ДРАКОНА ЧЕРЕЗ</span><b id="bossTimerText">25с</b></div><div class="boss-clock-track"><i id="bossTimerBar"></i></div></div><div class="battle-tag">FOE</div></div>
+  <div class="fighter enemy" id="enemyCard"><div class="portrait" id="enemyPortrait"></div><div class="boss-scene" aria-hidden="true">
+<svg viewBox="0 0 540 690" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="dragonScale" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#69758c"/><stop offset=".22" stop-color="#242e40"/><stop offset=".6" stop-color="#0b1422"/><stop offset="1" stop-color="#41485a"/></linearGradient>
+ <linearGradient id="dragonArmor" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#8a929f"/><stop offset=".16" stop-color="#323a49"/><stop offset=".52" stop-color="#111927"/><stop offset=".8" stop-color="#3e4654"/><stop offset="1" stop-color="#090f1a"/></linearGradient>
+ <linearGradient id="magma" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff3a4"/><stop offset=".24" stop-color="#ff9d37"/><stop offset=".6" stop-color="#f04418"/><stop offset="1" stop-color="#751323"/></linearGradient>
+ <radialGradient id="dragonAura"><stop stop-color="#f15c25" stop-opacity=".7"/><stop offset=".6" stop-color="#8c2b29" stop-opacity=".14"/><stop offset="1" stop-color="#101a29" stop-opacity="0"/></radialGradient>
+ <pattern id="scalePattern" width="28" height="22" patternUnits="userSpaceOnUse"><path d="M1 2Q14 13 27 2M-13 2Q0 13 13 2" fill="none" stroke="#aeb8ca" stroke-opacity=".19" stroke-width="1.3"/><path d="M1 3Q14 14 27 3" fill="none" stroke="#050c17" stroke-opacity=".8" stroke-width="2"/></pattern>
+ <filter id="bodyShadow"><feGaussianBlur stdDeviation="12"/></filter>
+ <filter id="magmaGlow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="295" cy="410" rx="270" ry="320" fill="url(#dragonAura)"/>
+<!-- distant wing silhouette -->
+<path d="M335 177C401 130 468 99 520 95L474 197 528 225 444 249 489 317 410 289 376 365 345 278Z" fill="#090f1c" stroke="#727b8e" stroke-opacity=".35" stroke-width="4"/>
+<path d="M338 187Q430 133 504 110M382 222 493 220M390 269 464 303" fill="none" stroke="#ff7337" stroke-opacity=".38" stroke-width="3"/>
+<!-- neck and torso -->
+<path d="M234 177C144 222 105 326 147 414 100 479 128 587 213 657L465 681 516 586 451 490C484 399 435 272 360 209Z" fill="url(#dragonScale)" stroke="#8d98aa" stroke-opacity=".55" stroke-width="5"/>
+<path d="M234 177C144 222 105 326 147 414 100 479 128 587 213 657L465 681 516 586 451 490C484 399 435 272 360 209Z" fill="url(#scalePattern)" opacity=".75"/>
+<!-- chest armor plates -->
+<path d="M247 229Q187 294 202 370L262 431 324 362 302 261Z" fill="url(#dragonArmor)" stroke="#9aa5b6" stroke-opacity=".5" stroke-width="4"/>
+<path d="M320 225Q383 279 385 362L329 434 277 366 292 269Z" fill="url(#dragonArmor)" stroke="#9aa5b6" stroke-opacity=".48" stroke-width="4"/>
+<path d="M198 379Q170 453 210 531L285 581 332 484 265 420Z" fill="url(#dragonArmor)" stroke="#8e99a9" stroke-opacity=".42" stroke-width="4"/>
+<path d="M379 372Q428 446 391 531L322 582 279 482 332 420Z" fill="url(#dragonArmor)" stroke="#8e99a9" stroke-opacity=".42" stroke-width="4"/>
+<path d="M230 543Q265 511 298 535Q339 505 373 547L440 674 220 674Z" fill="#101927" stroke="#66758c" stroke-width="4"/>
+<!-- molten fractures -->
+<g fill="none" stroke="url(#magma)" stroke-linecap="round" stroke-linejoin="round" filter="url(#magmaGlow)">
+ <path d="M274 257 293 304 276 343 305 379 282 422 308 462 285 505 310 544" stroke-width="5"/>
+ <path d="M355 279 336 320 355 358 331 395 353 429 333 469" stroke-width="4"/>
+ <path d="M202 386 232 406 219 443 248 471 236 509" stroke-width="4"/>
+ <path d="M394 452 367 474 380 510 350 539" stroke-width="4"/>
+ <path d="M254 565 278 588 270 630" stroke-width="3.5"/>
+</g>
+<!-- heavy shoulder spikes -->
+<g fill="url(#dragonArmor)" stroke="#94a0b2" stroke-opacity=".6" stroke-width="3">
+ <path d="M202 274 153 207 220 236Z"/><path d="M358 256 414 184 393 288Z"/><path d="M169 394 93 357 161 444Z"/><path d="M409 382 490 325 433 444Z"/>
+ <path d="M184 501 109 478 196 548Z"/><path d="M416 505 501 470 435 557Z"/>
+</g>
+<!-- foreground claw -->
+<path d="M401 516Q451 532 470 584L450 633 429 595 412 646 392 605 371 650 360 591Z" fill="url(#dragonArmor)" stroke="#a4aebe" stroke-opacity=".6" stroke-width="4"/>
+<path d="M430 592Q444 625 429 655M397 594Q409 630 390 650M369 590Q379 624 360 642" fill="none" stroke="url(#magma)" stroke-width="3.5" stroke-linecap="round" filter="url(#magmaGlow)"/>
+<!-- scale highlights -->
+<g fill="none" stroke="#d3dbea" stroke-opacity=".18" stroke-width="2"><path d="M170 306Q205 280 236 299M154 352Q191 330 219 348M161 470Q197 447 226 465M394 318Q425 338 438 371M365 486Q405 464 431 483M250 608Q284 588 315 606"/></g>
+</svg>
+</div><div class="hit-layer" id="enemyHitLayer"></div><div class="finfo"><div class="name" id="enemyName">ЛЕДЯНОЙ ГУЛЬ</div><div class="role" id="enemyRole">ENEMY · 1/3</div><div class="hpbar"><div class="hpfill" id="enemyFill"></div></div><div class="hpnum"><span>Здоровье</span><b id="enemyHp">45 / 45</b></div></div><div class="boss-clock"><div class="boss-clock-label"><span>АТАКА ДРАКОНА ЧЕРЕЗ</span><b id="bossTimerText">25с</b></div><div class="boss-clock-track"><i id="bossTimerBar"></i></div></div><div class="battle-tag">FOE</div></div>
  </div>
  <div class="hero-roster" id="heroRoster">
   <div class="roster-title">ОТРЯД ГЕРОЕВ</div>
@@ -409,7 +507,7 @@ button.action:not(.secondary){background:linear-gradient(180deg,#ffe4a3,#ce8b2e)
 <script>
 (()=>{'use strict';
 const W=8,T=5,MAXHP=100,TURN_SECONDS=25,colors=['cm','lina','venge','brood','wyvern'];
-const heroes={cm:{name:'Crystal Maiden',abbr:'CM',color:'#78c9e8',face:'cm'},lina:{name:'Lina',abbr:'LINA',color:'#ef7969',face:'lina'},venge:{name:'Vengeful Spirit',abbr:'VS',color:'#9a7de4',face:'venge',},brood:{name:'Broodmother',abbr:'BM',color:'#a96bd1',face:'brood'},wyvern:{name:'Winter Wyvern',abbr:'WW',color:'#64b9d1',face:'wyvern'}};
+const heroes={cm:{name:'Crystal Maiden',abbr:'CM',color:'#45bff2',face:'cm'},lina:{name:'Lina',abbr:'LINA',color:'#fa6545',face:'lina'},venge:{name:'Vengeful Spirit',abbr:'VS',color:'#b878ef',face:'venge',},brood:{name:'Broodmother',abbr:'BM',color:'#59ca7a',face:'brood'},wyvern:{name:'Winter Wyvern',abbr:'WW',color:'#f0bd59',face:'wyvern'}};
 const enemies=[{name:'ДРЕВНИЙ ДРАКОН',hp:60,face:'dragon',role:'BOSS · ФАЗА I'},{name:'ДРЕВНИЙ ДРАКОН',hp:85,face:'dragon',role:'BOSS · ФАЗА II'},{name:'ДРЕВНИЙ ДРАКОН',hp:120,face:'dragon',role:'BOSS · ИСТИННАЯ ФОРМА'}];
 const $=id=>document.getElementById(id);let board=[],sel=null,score=0,turn=0,hp=MAXHP,enemy=0,ehp=60,busy=false,over=false,dragFrom=null,enemyTick=0,abilityCount=0,clock=TURN_SECONDS,timerId=null,soundOn=false,audioCtx=null,gemUid=0,attackInProgress=false;
 function portrait(face){
@@ -428,35 +526,38 @@ function portrait(face){
 let gemCounter=0;
 let gemSvgUid=0;
 function gemSvg(type,special=0){
- const h=heroes[type],id='crystal'+(++gemSvgUid);
- const glyph={
- cm:'<g fill="none" stroke="#e6fbff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M40 22v36M22 31l36 18M22 49l36-18"/><path d="m35 27 5-5 5 5m-10 26 5 5 5-5M25 27l-4 1 1 5m33-6 4 1-1 5M25 53l-4-1 1-5m33 6 4-1-1-5"/></g><circle cx="40" cy="40" r="5" fill="#fff" opacity=".9"/>',
- lina:'<path d="M41 15c5 12-5 15-3 23 2 6 8 5 10-2 10 14 4 27-8 29-14 2-24-9-18-21 3-7 8-11 8-19 4 4 5 8 5 12 5-6 8-13 6-22Z" fill="#ff8c34" stroke="#ffd18a" stroke-width="2.3" stroke-linejoin="round"/><path d="M40 35c4 7-5 11-3 17 2 5 8 4 9-1 1-5-3-11-6-16Z" fill="#fff4c6"/><path d="M24 56q-2-8 4-14" fill="none" stroke="#ffc15b" stroke-width="2"/>',
- venge:'<path d="M43 13 54 31 45 32 50 67 25 69 34 43 24 44Z" fill="#e9d8ff" stroke="#ad78ff" stroke-width="2.4" stroke-linejoin="round"/><path d="m42 21-5 20 9-3-8 22" fill="none" stroke="#7135c0" stroke-width="3" stroke-linecap="round"/><path d="M22 31 29 26M53 47l5 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>',
- brood:'<g stroke="#e6ffc5" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M40 30v26M33 35 21 25 14 31M47 35 59 25 66 31M31 43 17 42 11 53M49 43 63 42 69 53M35 51 26 65 19 64M45 51 54 65 61 64"/><path d="M40 22c-9 0-12 7-9 15 2 7 16 7 18 0 3-8 0-15-9-15Z" fill="#b5f36e"/><circle cx="36" cy="31" r="2" fill="#2a491b" stroke="none"/><circle cx="44" cy="31" r="2" fill="#2a491b" stroke="none"/><path d="M34 40q6 7 12 0" stroke="#528d39"/></g>',
- wyvern:'<path d="M19 49c0-16 14-29 29-22 12 6 12 20 2 28-8 6-22 2-21-8 1-7 8-10 13-6 4 3 3 8-1 10" fill="none" stroke="#e2fbff" stroke-width="4" stroke-linecap="round"/><path d="M25 19 34 28 46 16 48 28 61 32 49 39M19 57l12-3 2 12" fill="none" stroke="#73d9ef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="31" r="3" fill="#fff3c1"/>'
+ const h=heroes[type],id='jewel'+(++gemSvgUid);
+ const sigils={
+  cm:'<g fill="none" stroke="#e9fbff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M40 20v40M20 30l40 20M20 50l40-20M40 20l-5 7m5-7 5 7M40 60l-5-7m5 7 5-7M20 30l8 1m-8-1 1 8M60 30l-8 1m8-1-1 8M20 50l8-1m-8 1 1-8M60 50l-8-1m8 1-1-8"/><circle cx="40" cy="40" r="4" fill="#fff"/></g>',
+  lina:'<path d="M42 13c4 12-6 15-3 24 2 6 8 5 10-2 10 14 4 28-9 30-14 2-24-10-17-22 4-7 8-10 8-19 4 5 5 9 5 13 5-6 8-14 6-24Z" fill="#ff873b" stroke="#ffd38d" stroke-width="2.2" stroke-linejoin="round"/><path d="M40 34c4 7-5 11-3 18 2 5 8 4 9-1 1-5-3-11-6-17Z" fill="#fff9d8"/><path d="M25 56q-2-8 5-15" fill="none" stroke="#ffbf61" stroke-width="2"/>',
+  venge:'<g fill="none" stroke="#f2ddff" stroke-width="2.8" stroke-linecap="round"><path d="M40 17c-13 0-22 9-22 22 0 12 9 21 22 21 12 0 22-9 22-21 0-8-4-14-11-18"/><path d="M48 25c-7-4-17-1-20 7-3 7 1 15 9 17 7 2 14-3 14-10 0-5-4-9-9-9-4 0-7 3-7 7"/><path d="m52 17 2 9 9-2M17 52l8-2 2 8"/></g><circle cx="40" cy="42" r="3.5" fill="#fff" filter="url(#glow'+id+')"/>',
+  brood:'<g stroke="#e7ffd1" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 57C23 34 34 20 54 17 55 38 43 57 19 57Z" fill="#6bdc83"/><path d="M20 58C31 46 40 35 53 18" fill="none" stroke="#efffd9" stroke-width="2.8"/><path d="m29 47-1-11m11 0 1 10m-1-10 10-2" fill="none" stroke="#1b744c"/><path d="M16 60q17 3 30-3" fill="none"/></g>',
+  wyvern:'<path d="m40 11 7 18 19 1-15 12 5 19-16-11-16 11 5-19L14 30l19-1Z" fill="#ffe6a2" stroke="#fff5d0" stroke-width="2.3" stroke-linejoin="round"/><path d="m40 20 4 13 13 1-10 8 3 13-10-7-10 7 3-13-10-8 13-1Z" fill="#f4b743"/><circle cx="40" cy="40" r="5" fill="#fff9da"/>'
  };
- const symbol=glyph[type]||glyph.cm;
+ const symbol=sigils[type]||sigils.cm;
  return '<svg class="gem" viewBox="0 0 80 80" aria-hidden="true"><defs>'+
- '<linearGradient id="base'+id+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset=".12" stop-color="'+h.color+'"/><stop offset=".52" stop-color="#172439"/><stop offset=".84" stop-color="'+h.color+'"/><stop offset="1" stop-color="#ffffff"/></linearGradient>'+
- '<linearGradient id="facet'+id+'" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#ffffff" stop-opacity=".58"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>'+
- '<radialGradient id="core'+id+'" cx=".35" cy=".25" r=".8"><stop stop-color="'+h.color+'" stop-opacity=".85"/><stop offset=".55" stop-color="#101b30" stop-opacity=".7"/><stop offset="1" stop-color="#030915" stop-opacity=".85"/></radialGradient>'+
- '<filter id="glow'+id+'" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'+
+ '<linearGradient id="metal'+id+'" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffff"/><stop offset=".1" stop-color="'+h.color+'"/><stop offset=".42" stop-color="#18304b"/><stop offset=".7" stop-color="'+h.color+'"/><stop offset="1" stop-color="#fff5cf"/></linearGradient>'+
+ '<linearGradient id="facetA'+id+'" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#ffffff" stop-opacity=".88"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>'+
+ '<linearGradient id="facetB'+id+'" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#07101d" stop-opacity=".1"/><stop offset="1" stop-color="#020814" stop-opacity=".85"/></linearGradient>'+
+ '<radialGradient id="core'+id+'" cx=".35" cy=".25" r=".9"><stop stop-color="'+h.color+'"/><stop offset=".65" stop-color="#102039"/><stop offset="1" stop-color="#030916"/></radialGradient>'+
+ '<filter id="glow'+id+'" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'+
+ '<filter id="shadow'+id+'" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.6" result="b"/><feOffset dy="2" result="o"/><feComponentTransfer><feFuncA type="linear" slope=".7"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>'+
  '</defs>'+
- '<path d="M40 3 69 20 73 55 40 78 7 55 11 20Z" fill="#020712" opacity=".65" transform="translate(0 2)"/>'+
- '<path d="M40 3 69 20 73 55 40 78 7 55 11 20Z" fill="url(#base'+id+')" stroke="#dff8ff" stroke-opacity=".88" stroke-width="1.5"/>'+
- '<path d="M40 5 66 21 40 33 14 21Z" fill="url(#facet'+id+')"/>'+
- '<path d="M11 21 40 33 40 75 7 55Z" fill="#ffffff" opacity=".13"/>'+
- '<path d="M69 21 40 33 40 75 73 55Z" fill="#020b19" opacity=".37"/>'+
- '<path d="M14 21 40 33 66 21 69 51 40 70 11 51Z" fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="1.2"/>'+
- '<path d="M40 33 40 75M14 21 40 33 66 21" fill="none" stroke="#f8ffff" stroke-opacity=".34" stroke-width="1.2"/>'+
- '<path d="M18 25 33 34 27 38 14 30Z" fill="#fff" opacity=".32"/>'+
- '<path d="M60 24 47 34 54 37 66 29Z" fill="#fff" opacity=".18"/>'+
- '<ellipse cx="40" cy="43" rx="21" ry="20" fill="url(#core'+id+')" stroke="#ffffff" stroke-opacity=".25" stroke-width="1.2"/>'+
- '<ellipse cx="40" cy="43" rx="17" ry="16" fill="none" stroke="'+h.color+'" stroke-opacity=".5" stroke-width="1.3"/>'+
+ '<path d="M40 2 67 17 77 40 67 63 40 78 13 63 3 40 13 17Z" fill="#020711" opacity=".8" transform="translate(0 2)"/>'+
+ '<path d="M40 2 67 17 77 40 67 63 40 78 13 63 3 40 13 17Z" fill="url(#metal'+id+')" stroke="#d8f5ff" stroke-width="1.5" filter="url(#shadow'+id+')"/>'+
+ '<path d="M40 4 64 18 40 30 16 18Z" fill="url(#facetA'+id+')"/>'+
+ '<path d="M13 18 40 30 40 75 4 40Z" fill="#ffffff" opacity=".17"/>'+
+ '<path d="M67 18 40 30 40 75 76 40Z" fill="url(#facetB'+id+')"/>'+
+ '<path d="M13 18 40 30 67 18 76 40 67 63 40 75 13 63 4 40Z" fill="none" stroke="#f5ffff" stroke-opacity=".48" stroke-width="1.2"/>'+
+ '<path d="M40 30 40 75M13 18 40 30 67 18M4 40 40 30 76 40M13 63 40 30 67 63" fill="none" stroke="#ffffff" stroke-opacity=".22" stroke-width="1.1"/>'+
+ '<path d="M17 22 32 31 27 36 10 27Z" fill="#fff" opacity=".32"/>'+
+ '<path d="M63 22 48 31 54 36 70 27Z" fill="#fff" opacity=".19"/>'+
+ '<path d="M40 31 61 42 40 66 19 42Z" fill="url(#core'+id+')" stroke="#ffffff" stroke-opacity=".26" stroke-width="1.2"/>'+
+ '<path d="M40 34 56 43 40 61 24 43Z" fill="none" stroke="'+h.color+'" stroke-opacity=".66" stroke-width="1.2"/>'+
  '<g filter="url(#glow'+id+')">'+symbol+'</g>'+
- '<path d="M17 53 40 69 63 53" fill="none" stroke="#fff" stroke-opacity=".24" stroke-width="1.5"/>'+
- (special?'<circle cx="40" cy="42" r="34" fill="none" stroke="#fff0b5" stroke-width="'+(special===2?3:1.8)+'" stroke-dasharray="'+(special===2?'4 3':'none')+'"/><path d="m40 5 5 7-5 7-5-7Z" fill="#fff5c1" stroke="#9f7030" stroke-width="1.2"/><path d="m40 61 3 5-3 5-3-5Z" fill="#fff5c1" stroke="#9f7030" stroke-width="1"/>' : '')+
+ '<path d="M18 58 40 72 62 58" fill="none" stroke="#ffffff" stroke-opacity=".38" stroke-width="1.3"/>'+
+ '<path d="M18 21 23 17M57 17 62 21M10 40l5 2M65 42l5-2" stroke="#fff" stroke-opacity=".8" stroke-width="1.4" stroke-linecap="round"/>'+
+ (special?'<circle cx="40" cy="40" r="35" fill="none" stroke="#fff0b5" stroke-width="'+(special===2?3:1.8)+'" stroke-dasharray="'+(special===2?'4 3':'none')+'"/><path d="m40 4 5 7-5 7-5-7Z" fill="#fff6c7" stroke="#b77d2f" stroke-width="1.2"/>' : '')+
  '</svg>';
 }
 function random(){return colors[Math.floor(Math.random()*T)]}
@@ -531,6 +632,17 @@ function render(){
 function pick(i){if(busy||over||attackInProgress)return;if(sel===null){sel=i;render();return}if(sel===i){sel=null;render();return}if(!adjacent(sel,i)){sel=i;render();return}move(sel,i)}
 function move(a,b){if(busy||over||attackInProgress||!adjacent(a,b))return;sel=null;swap(a,b);if(!hasMatch()){swap(a,b);render();say('Этот обмен не создаёт совпадение.');return}turn++;render();resolve()}
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function spawnCrystalShards(cell,color){
+ if(!cell)return;
+ const r=cell.getBoundingClientRect(),layer=document.createElement('div');
+ layer.className='shard-burst';layer.style.left=(r.left+r.width/2)+'px';layer.style.top=(r.top+r.height/2)+'px';
+ for(let i=0;i<11;i++){
+  const p=document.createElement('i'),a=(Math.PI*2*i/11)+(Math.random()-.5)*.35,d=24+Math.random()*40;
+  p.className='gem-shard';p.style.setProperty('--dx',Math.cos(a)*d+'px');p.style.setProperty('--dy',Math.sin(a)*d+'px');p.style.setProperty('--rot',(Math.random()*220-110)+'deg');p.style.setProperty('--gem-color',color);
+  layer.appendChild(p);
+ }
+ document.body.appendChild(layer);setTimeout(()=>layer.remove(),760);
+}
 function takeDamage(cardId,amount,critical=false,healing=false){
  const card=$(cardId),layer=$(cardId==='enemyCard'?'enemyHitLayer':'playerHitLayer');
  if(!card||!layer)return;
@@ -591,7 +703,7 @@ async function resolve(){busy=true;let chain=0;while(true){let {set,groups}=runs
  let create=null;groups.sort((a,b)=>b.length-a.length);const group=groups[0];
  if(group&&group.length>=4){let type=board[group[0]].type;create={index:group[Math.floor(group.length/2)],type,special:group.length>=5?2:1};extra+=group.length>=5?15:5}
  let dmg=damage+extra;ehp=Math.max(0,ehp-dmg);$('enemyHp').textContent=`${ehp} / ${enemies[enemy].hp}`;$('enemyFill').style.width=ehp/enemies[enemy].hp*100+'%';takeDamage('enemyCard',dmg,enemy===2||dmg>=14);if(heal){hp=Math.min(MAXHP,hp+heal);showBoardHeal(heal)}score+=n*100+extra*100+(chain-1)*250;
- set.forEach(i=>{let cell=$('board').children[i];if(cell)cell.classList.add('matched');board[i]=null});
+ set.forEach(i=>{let cell=$('board').children[i],gem=board[i];if(cell){cell.classList.add('matched');spawnCrystalShards(cell,heroes[gem.type]?.color||'#fff')}board[i]=null});
  $('boardFrame').classList.add('boardflash');say(`Комбо ×${chain}: ${n} кристаллов · ${dmg} урона${heal?` · +${heal} HP`:''}`);
  await wait(610);$('boardFrame').classList.remove('boardflash');
  // gravity and refill, preserving special at creation slot
